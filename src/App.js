@@ -1,24 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+
+import React from "react"
+import { Outlet } from "react-router-dom";
+
+import NavBar from "./components/navbar/NavBar";
+
+//PRUEBA PARA DESABILITAR NAV BAR
+import {useSelector} from "react-redux";
+
+
+
 
 function App() {
+  const { isLoggedIn } = useSelector((state) => state.auth); //PRUEBA PARA DESABILITAR NAV BAR
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <>
+      <header style={{margin:0,padding:0,backgroundColor:"#1A2027", maxWidth:"100%"}}>
+      {!isLoggedIn?<NavBar />:<></>}
       </header>
-    </div>
+      <section style ={{display:"flex", justifyContent:"center" }}>
+       <Outlet/>
+      </section>
+    </>
   );
 }
 
