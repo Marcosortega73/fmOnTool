@@ -1,8 +1,9 @@
 
 import React from "react";
 import { Controller } from "react-hook-form";
-import {styled } from "@mui/material/styles";
+
 import TextField from '@mui/material/TextField';
+import Chip from '@mui/material/Chip';
 
 import "./formText.css";
 
@@ -15,7 +16,10 @@ export const FormText = ({
   rulesBol,
   variant,
   labelText,
-  bgcolor
+  bgcolor,
+  text,
+  setValue,
+  vmodel
 }) => {
   
   return (
@@ -25,17 +29,23 @@ export const FormText = ({
         control={control}
         rules={{ required: rulesBol }}
         render={({ field }) => (
+          <>
+          <div style={{display:"flex",flexDirection:"column"}}>
+          <div style={{marginBottom:5}}>
+          <Chip label={text} color="primary" />    
+          </div> 
           <TextField  
-            {...field}
+            {...field }
             {...register(name)}
-            color={bgcolor}
             type={type}
             className="formText"
-            variant={variant} 
+            color="primary"
             error={!!errors[name]}
-            helperText={errors[name] && `${name} es un Campo Requerido`}
+            helperText={errors[name] && `${text} es un Campo Requerido`}
             autoComplete="off"
           />
+          </div>
+          </>
         )}
       />
     </>

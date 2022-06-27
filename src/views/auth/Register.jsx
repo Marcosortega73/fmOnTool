@@ -18,7 +18,11 @@ import SnackBarComponent from "../../components/common/SnackBarComponent";
 import BackDropComponent from "../../components/common/BackDropComponent";
 
 import { useNavigate } from "react-router-dom";
-
+import backgroundLogin from "../../assets/images/generales/login-bg.jpg";
+import logo from "../../assets/images/entherprise/logoSuperliga.png";
+import Chip from '@mui/material/Chip';
+import { Img } from "../../styles-components/Layout";
+import "./auth.css";
 //DATA
 
 const Register = ({ data }) => {
@@ -102,123 +106,127 @@ const Register = ({ data }) => {
 
   return (
     <>
-      <Container
-        fixed
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <Box
-          elevation={4}
+         <Container
+          fixed
           sx={{
-            bgcolor: "#cca500",
-            height: "100%",
-            width: "50%",
-            borderRadius: "15px",
-            boxShadow: "1px 2px 5px 3px rgba(0,0,0,0.75)",
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            border: "1px solid #ccc",
-            mt: "50px",
+            justifyContent: "space-between",
+            backgroundImage: `url(${backgroundLogin})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center center",
+            backgroundRepeat: "no-repeat",
           }}
+          className="container-login"
         >
-          <Typography
-            sx={{ fontSize: 17, paddingTop: "5px" }}
-            color="black"
-            gutterBottom
+          <Box
+            elevation={4}
+            sx={{
+              bgcolor: "#546e7a40 ",
+              height: "80%",
+              width: "50%",
+              borderRadius: "15px",
+              boxShadow: "1px 2px 5px 3px rgba(0,0,0,0.75)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "space-between",
+              border: "1px solid #ccc",
+            }}
           >
-            Conviertete en manager
-          </Typography>
-          <CardContent>
-            <FormControl>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <Grid
-                  container
-                  rowSpacing={1}
-                  columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                  }}
-                >
-                  <Grid item xs={12}>
-                    <FormText
-                      control={control}
-                      errors={errors}
-                      register={register}
-                      name="email"
-                      rulesBol={true}
-                      variant="outlined"
-                      labelText="Ingrese su Username"
-                      color="red"
-                      type="email"
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <FormText
-                      type="password"
-                      control={control}
-                      errors={errors}
-                      register={register}
-                      name="password"
-                      rulesBol="true"
-                      variant="outlined"
-                      labelText="Ingrese su Password"
-                      color="#212121"
-                    />
-                  </Grid>
+            <div style={{marginTop:7}}>
+            <Chip  label="Convierte en Manager" color="primary"  />      
+            </div>
+            <CardContent sx={{height:"100%",   display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "space-around", }}>
+              <FormControl>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <Grid
+                    container
+                    rowSpacing={4}
+                    columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "space-between",
 
-                  <Grid item xs={12}>
-                    <FormCheck
-                      control={control}
-                      errors={errors}
-                      name="checkbox"
-                      rulesBol={true}
-                      variant="filled"
-                      labelText="Aceptar las politicas de privacidad"
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      disabled={loading}
-                      sx={{
-                        width: "100%",
-                        height: "50px",
-                        borderRadius: "15px",
-                        backgroundColor: "#cca500",
-                        boxShadow: "1px 2px 5px 3px rgba(0,0,0,0.75)",
-                        border: "1px solid #ccc",
-                        marginTop: "10px",
-                        marginBottom: "10px",
-                        fontSize: "20px",
-                        fontWeight: "bold",
-                        color: "#fff",
-                        textTransform: "uppercase",
-                        letterSpacing: "1px",
-                        cursor: "pointer",
-                        "&:hover": {
-                          backgroundColor: "#cca500",
+                      
+                    }}
+                  >
+                    <Grid xs={12} sx={{mb:"20px"}}>
+                    
+                   
+                      <FormText
+                        control={control}
+                        errors={errors}
+                        register={register}
+                        name="email"
+                        rulesBol={true}
+                        variant="outlined"
+                        labelText="Ingrese su email"
+                        type="email"
+                        text="Email:"
+                      />
+                    </Grid>
+                    <Grid xs={12} sx={{mb:"20px"}}>
+                      <FormText
+                        type="password"
+                        control={control}
+                        errors={errors}
+                        register={register}
+                        name="password"
+                        rulesBol="true"
+                        variant="outlined"
+                        labelText="Ingrese su Password"
+                        color="#212121"
+                        text="Password:"
+                      />
+                    </Grid>
+                    <Grid >
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        disabled={loading}
+                        sx={{
+                          width: "100%",
+                          height: "50px",
+                          borderRadius: "15px",
+                          backgroundColor: "#212121",
                           boxShadow: "1px 2px 5px 3px rgba(0,0,0,0.75)",
                           border: "1px solid #ccc",
+                          marginTop: "10px",
+                          marginBottom: "10px",
+                          fontSize: "20px",
+                          fontWeight: "bold",
                           color: "#fff",
+                          textTransform: "uppercase",
+                          letterSpacing: "1px",
                           cursor: "pointer",
-                        },
-                      }}
-                    >
-                      {loading ? "Cargando..." : "Enviar"}
-                    </Button>
+                          "&:hover": {
+                            backgroundColor: "#cca500",
+                            boxShadow: "1px 2px 5px 3px rgba(0,0,0,0.75)",
+                            border: "1px solid #ccc",
+                            color: "#fff",
+                            cursor: "pointer",
+                          },
+                        }}
+                      >
+                        {loading ? "Cargando..." : "Enviar"}
+                      </Button>
+                    </Grid>
                   </Grid>
-                </Grid>
-              </form>
+                </form>
             </FormControl>
           </CardContent>
         </Box>
+        <Box sx={{width:"100%",height:"100%", display:"flex",flexDirection:"column", justifyContent:"end", alignItems:"end"}}>
+              <div>
+              <Img src={logo} alt="logo" />
+              </div>
+          </Box>
         <BackDropComponent open={backDrop} />
         {openSnackAlert.open && 
         <SnackBarComponent options={openSnackAlert}/>

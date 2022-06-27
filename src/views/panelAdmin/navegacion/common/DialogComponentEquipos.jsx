@@ -1,10 +1,6 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import ListItemText from "@mui/material/ListItemText";
-import ListItem from "@mui/material/ListItem";
-import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -107,7 +103,7 @@ export default function DialogComponentEquipos(props) {
           <FormControl fullWidth>
             <form onSubmit={handleSubmit(onSubmit)}>
               <Grid container spacing={3}>
-                <Grid item xs>
+                <Grid item >
                   <Item>
                   <h4>ID Equipo</h4>
                     <FormText
@@ -116,12 +112,12 @@ export default function DialogComponentEquipos(props) {
                       register={register}
                       name="id"
                       rulesBol={true}
-                      variant="outlined"
+                      labelText="ID Equipo"
                       type="number"
                     />
                   </Item>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item>
                   <Item>
                   <h4>Nombre</h4>
                     <FormText
@@ -130,12 +126,12 @@ export default function DialogComponentEquipos(props) {
                       register={register}
                       name="nombre"
                       rulesBol={true}
-                      variant="outlined"                   
+                      labelText="Nombre"             
                       type="text"
                     />
                   </Item>
                 </Grid>
-                <Grid item xs>
+                <Grid item >
                   <Item>
                   <h4>Nacionalidad</h4>
                     <FormSelect
@@ -144,7 +140,7 @@ export default function DialogComponentEquipos(props) {
                       register={register}
                       name="nacionalidad"
                       rulesBol={true}
-                      variant="outlined"
+                      labelText="Nacionalidad"
                       opcion={nations.nations}
                     />
                   </Item>
@@ -159,7 +155,7 @@ export default function DialogComponentEquipos(props) {
                       register={register}
                       name="manager_id"
                       rulesBol={true}
-                      variant="outlined"
+                      labelText="Manager"
                       opcion={managers}
                     />
                   </Item>
@@ -173,7 +169,7 @@ export default function DialogComponentEquipos(props) {
                       register={register}
                       name="torneo_id"
                       rulesBol={true}
-                      variant="outlined"
+                      labelText="Torneo"
                       opcion={torneos}
                       multiple={true}
                     />

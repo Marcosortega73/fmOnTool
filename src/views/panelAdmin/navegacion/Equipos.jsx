@@ -69,18 +69,22 @@ const headCells = [
   },
   {
     id: 'nombre',
+    numeric: true,
     label: 'Nombre',
   },
   {
     id: 'nacionalidad_id',
+    numeric: true,
     label: 'Nacionalidad',
   },
   {
     id: 'manager_id',
+    numeric: true,
     label: 'Manager',
   },
   {
     id: 'torneo_id',
+    numeric: true,
     label: 'Torneo',
   },
 
@@ -194,14 +198,14 @@ EnhancedTableToolbar.propTypes = {
 
 export default function Equipos() {
   const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
+  const [orderBy, setOrderBy] = React.useState('nacionalidad');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
 
-  const [openDialog,setOpenDialog] = React.useState(false);
+  const [openDialogEquipos,setOpenDialogEquipos] = React.useState(false);
   const [managers , setManagers] = React.useState([])
   const [torneos , setTorneos] = React.useState([])
   const [equipos , setEquipos] = React.useState([])
@@ -254,8 +258,8 @@ const getManagers = async () =>{
 
   console.log("Equipos =>",equipos);
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
+  const handleOpenDialogEquipos = () => {
+    setOpenDialogEquipos(true);
   }
 
   const handleRequestSort = (event, property) => {
@@ -302,10 +306,6 @@ const getManagers = async () =>{
     setPage(0);
   };
 
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
-  };
-
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -316,7 +316,7 @@ const getManagers = async () =>{
         <Box sx={{display:"flex", justifyContent:"space-between"}}> 
         <EnhancedTableToolbar numSelected={selected.length} />
         <Tooltip title="Agregar Equipo">
-        <Button onClick={handleOpenDialog} variant="contained" endIcon={<AddCircleIcon />}>
+        <Button onClick={handleOpenDialogEquipos} variant="contained" endIcon={<AddCircleIcon />}>
           Crear Equipo
         </Button>
         </Tooltip>
@@ -327,7 +327,6 @@ const getManagers = async () =>{
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
           >
             <EnhancedTableHead
               numSelected={selected.length}
@@ -391,7 +390,7 @@ const getManagers = async () =>{
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <DialogComponentEquipos open={openDialog} setOpen={setOpenDialog} torneos={torneos} managers={managers} setLoading={setLoading} />
+      <DialogComponentEquipos open={openDialogEquipos} setOpen={setOpenDialogEquipos} torneos={torneos} managers={managers} setLoading={setLoading} />
     </Box>
   );
 }

@@ -1,0 +1,33 @@
+.formText{
+    background-color: rgba(0, 0, 0, 0.444);
+    border-radius: 10px;
+    border-color: aliceblue;
+    font-weight: 700;
+   
+}
+.css-1rbz63g-MuiInputBase-root-MuiOutlinedInput-root{
+    color: rgb(245, 235, 235) !important;
+    font-weight: 700;
+}
+
+.labelClass{
+    padding-bottom: 10px;
+}
+.formText>label{
+
+    color:antiquewhite
+}
+
+.formText:active{
+    background-color: black;
+}
+.formText:focus{
+    background-color: black;
+}
+.css-7elnev-MuiInputBase-input-MuiOutlinedInput-input:-webkit-autofill{
+    box-shadow: 10px 10px 5px rgba(187, 1, 1, 0.027) !important;
+    -webkit-box-shadow: 10px 10px 5px  rgba(187, 1, 1, 0.027) !important;
+    -webkit-text-fill-color: black !important;
+    border: 1px solid #CCC !important;
+    
+}
