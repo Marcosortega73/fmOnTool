@@ -17,15 +17,17 @@ import {
   import SnackBarComponent from "../../components/common/SnackBarComponent";
   import BackDropComponent from "../../components/common/BackDropComponent";
   import backgroundLogin from "../../assets/images/generales/login-bg.jpg";
-  import InputLabel from '@mui/material/InputLabel';
+  import logo from "../../assets/images/entherprise/logoSuperliga.png";
+  import Chip from '@mui/material/Chip';
 
-  import "./login.css";
+
+
+  import "./auth.css";
+import { Img } from "../../styles-components/Layout";
 
 
 
   const Login = (props) => {
-
-
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
@@ -74,7 +76,7 @@ import {
           fixed
           sx={{
             display: "flex",
-            justifyContent: "start",
+            justifyContent: "space-between",
             backgroundImage: `url(${backgroundLogin})`,
             backgroundSize: "cover",
             backgroundPosition: "center center",
@@ -86,7 +88,6 @@ import {
             elevation={4}
             sx={{
               bgcolor: "#546e7a40 ",
-              
               height: "80%",
               width: "50%",
               borderRadius: "15px",
@@ -94,16 +95,13 @@ import {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
+              justifyContent: "space-between",
               border: "1px solid #ccc",
             }}
           >
-            <Typography
-              sx={{ fontSize: 19, paddingTop: "10px", fontWeight: "bold" }}
-              color="#1e2024"
-              gutterBottom
-            >
-              Vuelta a los Entrenamientos
-            </Typography>
+            <div style={{marginTop:7}}>
+            <Chip  label="Vuelta a los Entrenamientos" color="primary"  />      
+            </div>
             <CardContent sx={{height:"100%",   display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
@@ -112,29 +110,33 @@ import {
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <Grid
                     container
-                    rowSpacing={3}
+                    rowSpacing={4}
                     columnSpacing={{ xs: 1, sm: 2, md: 3 }}
                     sx={{
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
-                      justifyContent: "space-around",
+                      justifyContent: "space-between",
+
                       
                     }}
                   >
-                    <Grid item xs={12}>
+                    <Grid xs={12} sx={{mb:"20px"}}>
+                    
+                   
                       <FormText
                         control={control}
                         errors={errors}
                         register={register}
-                        bgcolor="#1e2024"
                         name="email"
                         rulesBol={true}
+                        variant="outlined"
                         labelText="Ingrese su email"
                         type="email"
+                        text="Email:"
                       />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid xs={12} sx={{mb:"20px"}}>
                       <FormText
                         type="password"
                         control={control}
@@ -145,9 +147,10 @@ import {
                         variant="outlined"
                         labelText="Ingrese su Password"
                         color="#212121"
+                        text="Password:"
                       />
                     </Grid>
-                    <Grid item>
+                    <Grid >
                       <Button
                         type="submit"
                         variant="contained"
@@ -184,6 +187,11 @@ import {
                 </form>
               </FormControl>
             </CardContent>
+          </Box>
+          <Box sx={{width:"100%",height:"100%", display:"flex",flexDirection:"column", justifyContent:"end", alignItems:"end"}}>
+              <div>
+              <Img src={logo} alt="logo" />
+              </div>
           </Box>
           <BackDropComponent open={backDrop} />
           {openSnackAlert.open && 

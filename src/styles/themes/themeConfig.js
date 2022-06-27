@@ -20,6 +20,12 @@ const theme = createTheme({
             dark: "#d32f2f",
             contrastText: "#fff"
         },
+        currentColor: {
+            main: "#cca500",
+            light: "#f5f5f5",
+            dark: "#f5f5f5",
+            contrastText: "#fff"
+        }
     
     
     },

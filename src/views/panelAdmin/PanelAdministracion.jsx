@@ -1,5 +1,6 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
+
 import Drawer from "@mui/material/Drawer";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppBar from "@mui/material/AppBar";
@@ -29,23 +30,36 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/authSlice";
 
+import "./panelAdministracion.css";
+import userAdminService from "../../services/api/entity/userAdminService";
+
 const drawerWidth = 240;
+let activeStyle = 
+{
+  textDecoration: "underline",
+
+};
 
 export default function PanelAdministracion({ data, dataSecond }) {
   const { isLoggedIn } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const optionesPanel = [
-    "Dashboard",
-    "Jugadores",
-    "Managers",
-    "Equipos",
-    "Partidos",
-    "Estadisticas",
-    "Torneos",
-  ];
-  const opcionesPanelSecond = ["El Comunitario", "Apuestas", "Ligas del Mundo"];
+  const [userData, setUserData] = React.useState({
+  });
+
+  //NO PUDE HACERLO DESDE REDUX
+  const user  = JSON.parse(localStorage.getItem('user'));
+
+
+React.useEffect(() => {
+  if (user) {
+    userAdminService(user).then((response) => {
+      setUserData(response);
+    });
+
+    }
+}, [isLoggedIn]); // eslint-disable-line
 
   const handleLogout = (e) => {
     dispatch(logout())
@@ -66,12 +80,14 @@ export default function PanelAdministracion({ data, dataSecond }) {
           sx={{
             width: `calc(100% - ${drawerWidth}px)`,
             ml: `${drawerWidth}px`,
+            
           }}
         >
           <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
             <Typography variant="h6" noWrap component="div">
               Panel de Administracion
             </Typography>
+            <div>
             <Grid container>
               {!isLoggedIn ? (
                 <>
@@ -221,13 +237,16 @@ export default function PanelAdministracion({ data, dataSecond }) {
                 </>
               )}
             </Grid>
+            </div>
           </Toolbar>
         </AppBar>
         <Drawer
           sx={{
             width: drawerWidth,
+            
             flexShrink: 0,
             "& .MuiDrawer-paper": {
+              backgroundColor: "#1A2027",
               width: drawerWidth,
               boxSizing: "border-box",
             },
@@ -235,35 +254,59 @@ export default function PanelAdministracion({ data, dataSecond }) {
           variant="permanent"
           anchor="left"
         >
-          <Toolbar />
+          <Toolbar >
+          <div style={{ display:"flex", flexDirection:"column",alignItems:"center", justifyContent:"center", padding:"4px", margin:"4px"}}>  
+              <div style={{marginBottom:"15px"}}> 
+              <Avatar></Avatar>
+              </div>
+              <div>
+              <Typography variant="h6"   >
+                {user ? userData.email : "Usuario"}
+              </Typography>
+              </div>
+              </div>
+            </Toolbar>
+
           <Divider />
           <List>
             {data.map((item, index) => (
-              <ListItem key={index} disablePadding>
-                <Link to={item.path}>
-                  <ListItemButton>
+              <NavLink key={index} to={item.path}   style={({ isActive }) =>
+              isActive ? activeStyle : undefined
+            }>
+              <ListItem  disablePadding >
+                
+                  <ListItemButton className="buttonList" sx={{
+                    color:"#f5f5f5",
+                  }}>
                     <ListItemIcon>
                       <SwitchLeftIcon />
                     </ListItemIcon>
-                    <ListItemText primary={item.name} />
+                    <ListItemText color="white" primary={item.name} />
                   </ListItemButton>
-                </Link>
+              
               </ListItem>
+              </NavLink>
             ))}
           </List>
           <Divider />
           <List>
             {dataSecond.map((item, index) => (
+              <NavLink key={index} to={item.path}   style={({ isActive }) =>
+              isActive ? activeStyle : undefined
+            }>
               <ListItem key={index} disablePadding>
-                <Link to={item.path}>
-                  <ListItemButton>
+            
+                  <ListItemButton sx={{
+                    color:"#f5f5f5",
+                  }}>
                     <ListItemIcon>
                       <FiberNewIcon />
                     </ListItemIcon>
                     <ListItemText primary={item.name} />
                   </ListItemButton>
-                </Link>
+              
               </ListItem>
+              </NavLink>
             ))}
           </List>
         </Drawer>

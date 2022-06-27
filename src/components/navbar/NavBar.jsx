@@ -123,8 +123,8 @@ const NavBar = (props) => {
               </Link>
             </Grid>
             <Grid item xs={12} sm container sx={{ mt: 2 }}>
-              <Grid item xs container direction="column" spacing={2}>
-                <Grid item xs>
+              <Grid item  container direction="column" spacing={2}>
+                <Grid item>
                   <Search>
                     <SearchIconWrapper>
                       <SearchIcon />

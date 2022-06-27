@@ -15,17 +15,22 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import Tooltip from '@mui/material/Tooltip';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import { visuallyHidden } from '@mui/utils';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DialogComponent from './common/DialogComponent';
 import Button from "@mui/material/Button";
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 import {getNations}  from  '../../../redux/nacionalidadSlice';
 import {useDispatch} from 'react-redux';
 import jugadoresServices from '../../../services/api/jugadores/jugadoresService';
 import equiposServices from '../../../services/api/equipos/equiposServices';
+import { IconButton } from '@mui/material';
+
+import Swal from 'sweetalert2'
+
 
 
 
@@ -63,52 +68,51 @@ const headCells = [
   {
     id: 'id',
     numeric: true,
-    disablePadding: true,
     label: 'Id de Jugador',
   },
   {
     id: 'nombre',
-    disablePadding: false,
     label: 'Nombre',
   },
   {
     id: 'nacionalidad_id',
-    disablePadding: false,
+    numeric: true,
     label: 'Nacionalidad',
   },
   {
     id: 'equipo_id',
-    disablePadding: false,
+    numeric: true,
     label: 'Equipo',
   },
   {
     id: 'altura',
-    disablePadding: false,
+    numeric: true,
     label: 'Altura',
   },
   {
     id: 'peso',
     numeric: true,
-    disablePadding: false,
     label: 'Peso',
   },
   {
     id: 'ca',
     numeric: true,
-    disablePadding: false,
     label: 'Calidad Actual',
   },
   {
     id: 'cp',
     numeric: true,
-    disablePadding: false,
     label: 'Calidad Potencial',
   },
   {
     id: 'valor',
     numeric: true,
-    disablePadding: false,
     label: 'Valor',
+  },
+  {
+    id: 'actions',
+    numeric: true,
+    label: 'Acciones',
   },
 
 ];
@@ -124,11 +128,59 @@ function EnhancedTableHead(props) {
 
 
   return (
-    <TableHead>
-      <TableRow>
+    <TableHead
+    sx={{
+      backgroundColor:"#292c31",
+      color: '#fff',
+      
+      '& th': {
+        color: '#fff',
+        fontSize: '1.2rem',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        padding: '0.5rem',
+        borderBottom: '1px solid #fff',
+        '&:hover': {
+          backgroundColor: '#fff',
+          color: '#292c31',
+        },
+        '&:active': {
+          backgroudColor: '#fff',
+          color: '#292c31',
+        },
+        '&:focus': {
+          backgroundColor: '#fff',
+          color: '#292c31',
+        }
+
+      },
+      '.css-1f12udi-MuiButtonBase-root-MuiTableSortLabel-root.Mui-active': {
+        backgroundColor: '#fff',
+        color: '#292c31',
+        padding: '0.5rem',   
+      }
+    
+    }}>
+      <TableRow
+      sx={{
+        'th': {
+          '&:active': {
+            backgroudColor: 'red',
+            color: '#fff',
+          },
+          '&:focus': {
+            backgroundColor: 'red',
+            color: '#fff',
+          }
+          },
+        '.css-1s5sh37-MuiTableRow-root th': {
+          backgroundColor: 'red',
+        }
+        
+      }}>
         <TableCell padding="checkbox">
           <Checkbox
-            color="primary"
+            sx={{color:'#fff'}}
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
@@ -140,14 +192,31 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
+            sx={{
+              fontSize: '1rem',
+              fontWeight: 'bold',
+              color: '#fff',
+              textAlign: 'center',
+              cursor: 'pointer',
+              '&:active': {
+                backgroundColor: '#fff',
+                color: '#292c31',
+              },
+            }}
+
           >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
+              sx={{
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                '&:hover': {
+                  color: 'primary',
+                },
+              }}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -196,7 +265,7 @@ const EnhancedTableToolbar = (props) => {
           variant="subtitle1"
           component="div"
         >
-          {numSelected} selected
+          {numSelected} Jugadores seleccionados
         </Typography>
       ) : (
         <Typography
@@ -223,15 +292,32 @@ EnhancedTableToolbar.propTypes = {
 
 export default function Jugadores() {
   const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
+  const [orderBy, setOrderBy] = React.useState('nombre');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  // const [rows,setRow] = React.useState([]);
+
+
+
   const [openDialog,setOpenDialog] = React.useState(false);
   const [jugadores , setJugadores] = React.useState([])
+
+  const [jugadorSelect, setJugadorSelect] = React.useState({
+    id: 0,
+    nombre: "",
+    nacionalidad:[],
+    equipo: 0,
+    altura: 0,
+    peso: 0,
+    ca: 0,
+    cp: 0,
+    valor: 0,
+  })
+
+  const [actionSelect, setActionSelect] = React.useState('');
   const [equipos , setEquipos] = React.useState([])
+
+
   const [loading,setLoading] = React.useState(true);
   const dispatch = useDispatch();
   
@@ -256,14 +342,48 @@ export default function Jugadores() {
     getEquipos()
     getJugadores()  
   }
-  ,[loading]);
-
-  console.log("JUGADORES =>",jugadores);
-
+  ,[loading]); // eslint-disable-line react-hooks/exhaustive-deps
+  
   const handleOpenDialog = () => {
     setOpenDialog(true);
   }
 
+  const handleJugadorSelect = (jugador,action) => {
+    setActionSelect(action)
+
+    if(action === 'edit'){
+      setJugadorSelect({
+        id: jugador.id,
+        nombre: jugador.nombre,
+        nacionalidad: jugador.Nacionalidad.id,
+        equipo: jugador.Equipo.id,
+        altura: jugador.altura,
+        peso: jugador.peso,
+        ca: jugador.ca,
+        cp: jugador.cp,
+        valor: jugador.valor,
+      })
+    }
+    else if (action === 'ver'){
+      setJugadorSelect({
+        id: jugador.id,
+        nombre: jugador.nombre,
+        nacionalidad: jugador.Nacionalidad.nombre,
+        equipo: jugador.Equipo.nombre,
+        altura: jugador.altura,
+        peso: jugador.peso,
+        ca: jugador.ca,
+        cp: jugador.cp,
+        valor: jugador.valor,
+      })
+    }
+    handleOpenDialog()
+  }
+ const handleCreateJugador = () => {
+    setActionSelect('create')
+    setJugadorSelect({})
+    handleOpenDialog()
+ }
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -308,34 +428,69 @@ export default function Jugadores() {
     setPage(0);
   };
 
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
-  };
+  const handleDelete = async (id) => {
+    console.log("ID DE JUGADOR",id);
+    Swal.fire({
+      title: 'Advertencia',
+      text: '¿ Esta seguro que desea eliminar el jugador ?',
+      icon: 'warning',
+      iconColor: '#e8b71c',
+      showCancelButton: true,
+      confirmButtonText: 'Si, Eliminar',
+      confirmButtonColor: '#1e2024',
+      cancelButtonText: 'No, Cancelar',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+       const res = await jugadoresServices.deleteJugadorService(id);
+       console.log("QUE ONDA",res);
+
+        if(res.status === 200){
+          await getJugadores()
+        Swal.fire(
+          'Eliminado!',
+        `${res.message}`,
+          'success'
+        )
+        }
+        else{
+          Swal.fire(
+            'Error!',
+            'El jugador no ha sido eliminado. Ocurrio un error en el servidor',
+            'error'
+          )
+        }
+      }
+    })
+  }
+
+
+
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - jugadores.length) : 0;
-
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
-        <Box sx={{display:"flex", justifyContent:"space-between"}}> 
+    <Box sx={{ width: '100%',borderBottom:"none",  }}>
+      <Paper sx={{ width: '100%', mb: 2,  borderBottom:"none",   boxShadow: "1px 1px 4px 2px rgba(0,0,0,0.45)",}}>
+        <Box > 
+        <div style={{display:"flex", justifyContent:"space-between" , paddingTop:32}}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <Tooltip title="Agregar Jugador">
-        <Button onClick={handleOpenDialog} variant="contained" endIcon={<AddCircleIcon />}>
+        <Button onClick={handleCreateJugador} variant="contained" endIcon={<AddCircleIcon />}>
           Crear jugador
         </Button>
         </Tooltip>
+        </div>
         </Box>
-       
-        <TableContainer>
+
+        <Paper sx={{mt:4, borderTop:"solid 2px #546e7a",borderBottom:"none"}}> 
+
+        <TableContainer >
          
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            
+         
           >
             <EnhancedTableHead
               numSelected={selected.length}
@@ -378,44 +533,57 @@ export default function Jugadores() {
                       >
                         {row.id}
                       </TableCell>
-                      <TableCell align="right">{row.nombre&&row.nombre}</TableCell>
-                      <TableCell align="right">{row.Nacionalidad&&row.Nacionalidad.nombre}</TableCell>
-                      <TableCell align="right">{row.Equipo&&row.Equipo.nombre}</TableCell>
-                      <TableCell align="right">{row.altura+"cm"}</TableCell>
-                      <TableCell align="right">{row.peso+"kg"}</TableCell>
-                      <TableCell align="right">{row.ca}</TableCell>
-                      <TableCell align="right">{row.cp}</TableCell>
-                      <TableCell align="right">{"€ "+row.valor}</TableCell>
+                      <TableCell align="left">{row.nombre&&row.nombre}</TableCell>
+                      <TableCell align="left">{row.Nacionalidad&&row.Nacionalidad.nombre}</TableCell>
+                      <TableCell align="left">{row.Equipo&&row.Equipo.nombre}</TableCell>
+                      <TableCell align="left">{row.altura+"cm"}</TableCell>
+                      <TableCell align="left">{row.peso+"kg"}</TableCell>
+                      <TableCell align="left">{row.ca}</TableCell>
+                      <TableCell align="left">{row.cp}</TableCell>
+                      <TableCell align="left">{"€ "+row.valor}</TableCell>
+                      <TableCell align="left">
+                        <Tooltip title="Ver">
+
+                          <IconButton aria-label="ver" onClick={() => handleJugadorSelect(row,"ver")}>
+                            <VisibilityIcon />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Editar">
+                          <IconButton aria-label="edit" onClick={() => handleJugadorSelect(row, "edit")}>
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Eliminar">
+                          <IconButton aria-label="delete" onClick={() => handleDelete(row.id)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+
+
+                      </TableCell>
                     </TableRow>
                   );
                 })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: (dense ? 33 : 53) * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </TableContainer>
+        
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
           count={jugadores.length}
           rowsPerPage={rowsPerPage}
           page={page}
+          labelRowsPerPage="Filas por página"
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{borderBottom:"none"}}
         />
+        </Paper>
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
-      <DialogComponent open={openDialog} setOpen={setOpenDialog} equipos={equipos} setLoading={setLoading} />
+      <DialogComponent open={openDialog} setOpen={setOpenDialog} jugador={jugadorSelect} setJugadorSelect={setJugadorSelect} action={actionSelect} equipos={equipos} setLoading={setLoading} />
     </Box>
   );
 }

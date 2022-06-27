@@ -1,43 +1,82 @@
 import http from "../../apiAxios";
+import axios from "axios";
 
 
 const API_URL = "jugadores/";
 const getJugadoresService = async () => {
-    console.log("LLEGE AL USER ADMIN SERVICE")
+    console.log("LLEGE AL GET JUGADORES REQ")
 try{
-    const data  =  http
+    const response  =  http
       .get(API_URL+"obtenerJugadores")
-      .then((response) => {
-            console.log("LLEGE AL LA DATA JUGADORESasdasd VEVO",response.data)
-            return response.data.players;
+      .then((res) => {
+            console.log("LLEGE AL LA DATA GET JUGADOR",res.data)
+            return res.data.players;
       });
-      return data
+      return response
     
   }
   catch (error) {
-    console.log("LLEGE AL ERROR",error)
+    console.log("LLEGE AL ERROR GET",error)
   };
 }
 
 const createJugadorService = async (jugador) => {
-    console.log("LLEGE AL USER ADMIN SERVICE")
+    console.log("LLEGE AL CREATE JUGADOR REQ")
 try{
-    const data  =  http
+    const response  =  http
       .post(API_URL +"crearJugador", jugador)
-      .then((response) => {
-            console.log("LLEGE AL LA DATA JUGADORES VEVO",response.data)
-            return response.data;
+      .then((res) => {
+            console.log("LLEGE AL LA DATA CREATE JUGADOR",res.data)
+            return res.data;
       });
-      return data
+      return response
 
   }
   catch (error) {
-    console.log("LLEGE AL ERROR",error)
+    console.log("LLEGE AL ERROR CREATE",error)
   };
 }
+
+const updateJugadorService = async (jugador) => {
+    console.log("LLEGE AL UPDATE JUGADOR REQ")
+try{
+
+    const response  =  http
+      .put(API_URL +"actualizarJugador", jugador)
+      .then((res) => {
+            console.log("LLEGE AL LA DATA UPDATE JUGADOR" ,res.data)
+            return res.data;
+      });
+      return response
+    }
+      catch (error) {
+    console.log("LLEGE AL ERROR",error)
+  };
+
+  }
+  const deleteJugadorService = async (id) => {
+    console.log("LLEGE A DELETE JUGADOR REQ",id)
+try{
+   const response  =  http
+      .delete(API_URL+"eliminarJugador/"+ id)
+      .then((res) => {
+            console.log("Ejecutando el delete Jugador",res.data)
+
+            return res.data;
+      });
+      return response
+    }
+      catch (error) {
+    console.log("LLEGE AL ERROR Del DELETE",error)
+  };
+}
+
 const jugadoresServices = {
     getJugadoresService,
-    createJugadorService
+    createJugadorService,
+    updateJugadorService,
+    deleteJugadorService
+
 
 }
 
