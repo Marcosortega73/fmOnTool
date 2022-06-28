@@ -17,11 +17,13 @@ import Checkbox from '@mui/material/Checkbox';
 import Tooltip from '@mui/material/Tooltip';
 import { visuallyHidden } from '@mui/utils';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import StorageIcon from '@mui/icons-material/Storage';
 import DialogComponent from './common/DialogComponent';
 import Button from "@mui/material/Button";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 import {getNations}  from  '../../../redux/nacionalidadSlice';
 import {useDispatch} from 'react-redux';
@@ -30,6 +32,7 @@ import equiposServices from '../../../services/api/equipos/equiposServices';
 import { IconButton } from '@mui/material';
 
 import Swal from 'sweetalert2'
+import DialogExcel from './common/DialogExcel';
 
 
 
@@ -298,7 +301,7 @@ export default function Jugadores() {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
 
-
+  const [openExcel, setOpenExcel] = React.useState(false);
   const [openDialog,setOpenDialog] = React.useState(false);
   const [jugadores , setJugadores] = React.useState([])
 
@@ -428,6 +431,11 @@ export default function Jugadores() {
     setPage(0);
   };
 
+  const handleExcel = () => {
+    setOpenExcel(true);
+  }
+
+
   const handleDelete = async (id) => {
     console.log("ID DE JUGADOR",id);
     Swal.fire({
@@ -474,6 +482,11 @@ export default function Jugadores() {
         <Box > 
         <div style={{display:"flex", justifyContent:"space-between" , paddingTop:32}}>
         <EnhancedTableToolbar numSelected={selected.length} />
+        <Tooltip title="Agregar Jugador">
+        <Button onClick={handleExcel} variant="contained" startIcon={<CloudUploadIcon/>} endIcon={<StorageIcon />}>
+          Subir Excel de Jugadores
+        </Button>
+        </Tooltip>
         <Tooltip title="Agregar Jugador">
         <Button onClick={handleCreateJugador} variant="contained" endIcon={<AddCircleIcon />}>
           Crear jugador
@@ -584,6 +597,8 @@ export default function Jugadores() {
         </Paper>
       </Paper>
       <DialogComponent open={openDialog} setOpen={setOpenDialog} jugador={jugadorSelect} setJugadorSelect={setJugadorSelect} action={actionSelect} equipos={equipos} setLoading={setLoading} />
+      <DialogExcel openExcel={openExcel} setOpenExcel={setOpenExcel} />
+                
     </Box>
   );
 }

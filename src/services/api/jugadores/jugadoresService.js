@@ -36,21 +36,37 @@ try{
     console.log("LLEGE AL ERROR CREATE",error)
   };
 }
-
 const updateJugadorService = async (jugador) => {
+  console.log("LLEGE AL UPDATE JUGADOR REQ")
+try{
+
+  const response  =  http
+    .put(API_URL +"actualizarJugador", jugador)
+    .then((res) => {
+          console.log("LLEGE AL LA DATA UPDATE JUGADOR" ,res.data)
+          return res.data;
+    });
+    return response
+  }
+    catch (error) {
+  console.log("LLEGE AL ERROR",error)
+};
+
+}
+
+const uploadBaseDatosService = async (formData) => {
     console.log("LLEGE AL UPDATE JUGADOR REQ")
 try{
 
     const response  =  http
-      .put(API_URL +"actualizarJugador", jugador)
+      .post(API_URL +"uploads/jugadores", formData)
       .then((res) => {
-            console.log("LLEGE AL LA DATA UPDATE JUGADOR" ,res.data)
             return res.data;
       });
       return response
     }
       catch (error) {
-    console.log("LLEGE AL ERROR",error)
+    console.log("LLEGE AL ERROR UPLOAD",error)
   };
 
   }
@@ -75,6 +91,7 @@ const jugadoresServices = {
     getJugadoresService,
     createJugadorService,
     updateJugadorService,
+    uploadBaseDatosService,
     deleteJugadorService
 
 
