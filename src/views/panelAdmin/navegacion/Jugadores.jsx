@@ -32,7 +32,7 @@ import equiposServices from '../../../services/api/equipos/equiposServices';
 import { IconButton } from '@mui/material';
 
 import Swal from 'sweetalert2'
-import DialogExcel from './common/DialogExcel';
+import DialogExcel from './common/DialogExcelJugadores';
 
 
 

@@ -3,7 +3,7 @@ import http from "../../apiAxios";
 
 const API_URL = "equipos/";
 const getEquipos = async () => {
-    console.log("LLEGE AL USER ADMIN SERVICE")
+    console.log("LLEGE AL OBTENER EQUIPOS")
 try{
     const data  =  http
       .get(API_URL+"obtenerEquipos")
@@ -18,8 +18,8 @@ try{
     console.log("LLEGE AL ERROR",error)
   };
 }
-const createEquipos = async (equipo) => {
-  console.log("LLEGE AL USER ADMIN SERVICE")
+const createEquiposService = async (equipo) => {
+  console.log("LLEGE AL CREATE SERVICE EQUIPO")
 try{
   const data  =  http
     .post(API_URL+"createEquipo",equipo)
@@ -34,13 +34,13 @@ catch (error) {
   console.log("LLEGE AL ERROR",error)
 };
 }
-const deleteEquipos = async () => {
-  console.log("LLEGE AL USER ADMIN SERVICE")
+const deleteEquiposService = async (id) => {
+  console.log("LLEGE AL SERVICE DELETE EQUIPO")
 try{
   const data  =  http
-    .get(API_URL+"deleteEquipo")
+    .delete(API_URL+"deleteEquipo/"+id)
     .then((response) => {
-          console.log("LLEGE AL LA DATA equipos VEVO",response.data)
+          console.log("LLEGE AL THEN DE DELETE EQUIPO",response.data)
           return response.data;
     });
     return data
@@ -50,13 +50,13 @@ catch (error) {
   console.log("LLEGE AL ERROR",error)
 };
 }
-const updateEquipos = async () => {
-  console.log("LLEGE AL USER ADMIN SERVICE")
+const updateEquiposService = async (formEquipo) => {
+  console.log("LLEGE AL UPDATE EQUIPO")
 try{
   const data  =  http
-    .get(API_URL+"updateEquipo")
+    .put(API_URL+"updateEquipo",formEquipo)
     .then((response) => {
-          console.log("LLEGE AL LA DATA equipos VEVO",response.data)
+          console.log("LLEGE AL UPDATE EQUIPO THEN",response.data)
           return response.data;
     });
     return data
@@ -68,9 +68,9 @@ catch (error) {
 }
 const equiposServices = {
     getEquipos,
-    createEquipos,
-    deleteEquipos,
-    updateEquipos
+    createEquiposService,
+    deleteEquiposService,
+    updateEquiposService
 
 }
 

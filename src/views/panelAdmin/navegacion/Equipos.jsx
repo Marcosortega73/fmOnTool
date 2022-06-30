@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
@@ -15,20 +16,25 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import Tooltip from '@mui/material/Tooltip';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import { visuallyHidden } from '@mui/utils';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import StorageIcon from '@mui/icons-material/Storage';
 import DialogComponentEquipos from './common/DialogComponentEquipos';
 import Button from "@mui/material/Button";
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 import {getNations}  from  '../../../redux/nacionalidadSlice';
-import { getEquipos } from '../../../redux/equiposSlice';
 import {useDispatch} from 'react-redux';
-import { useSelector } from 'react-redux';
-import jugadoresServices from '../../../services/api/jugadores/jugadoresService';
 import equiposServices from '../../../services/api/equipos/equiposServices';
-// import {getJugadores} from '../../../redux/jugadoresSlice';
+import { IconButton } from '@mui/material';
+
+import Swal from 'sweetalert2'
+import DialogExcelEquipos from './common/DialogExcelEquipos';
+
+
 
 
 function descendingComparator(a, b, orderBy) {
@@ -65,7 +71,7 @@ const headCells = [
   {
     id: 'id',
     numeric: true,
-    label: 'Id de Jugador',
+    label: 'Id de equipo',
   },
   {
     id: 'nombre',
@@ -87,6 +93,11 @@ const headCells = [
     numeric: true,
     label: 'Torneo',
   },
+  {
+    id: 'actions',
+    numeric: true,
+    label: 'Acciones',
+  },
 
 ];
 
@@ -101,11 +112,59 @@ function EnhancedTableHead(props) {
 
 
   return (
-    <TableHead>
-      <TableRow>
+    <TableHead
+    sx={{
+      backgroundColor:"#292c31",
+      color: '#fff',
+      
+      '& th': {
+        color: '#fff',
+        fontSize: '1.2rem',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        padding: '0.5rem',
+        borderBottom: '1px solid #fff',
+        '&:hover': {
+          backgroundColor: '#fff',
+          color: '#292c31',
+        },
+        '&:active': {
+          backgroudColor: '#fff',
+          color: '#292c31',
+        },
+        '&:focus': {
+          backgroundColor: '#fff',
+          color: '#292c31',
+        }
+
+      },
+      '.css-1f12udi-MuiButtonBase-root-MuiTableSortLabel-root.Mui-active': {
+        backgroundColor: '#fff',
+        color: '#292c31',
+        padding: '0.5rem',   
+      }
+    
+    }}>
+      <TableRow
+      sx={{
+        'th': {
+          '&:active': {
+            backgroudColor: 'red',
+            color: '#fff',
+          },
+          '&:focus': {
+            backgroundColor: 'red',
+            color: '#fff',
+          }
+          },
+        '.css-1s5sh37-MuiTableRow-root th': {
+          backgroundColor: 'red',
+        }
+        
+      }}>
         <TableCell padding="checkbox">
           <Checkbox
-            color="primary"
+            sx={{color:'#fff'}}
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
@@ -118,11 +177,30 @@ function EnhancedTableHead(props) {
           <TableCell
             key={headCell.id}
             sortDirection={orderBy === headCell.id ? order : false}
+            sx={{
+              fontSize: '1rem',
+              fontWeight: 'bold',
+              color: '#fff',
+              textAlign: 'center',
+              cursor: 'pointer',
+              '&:active': {
+                backgroundColor: '#fff',
+                color: '#292c31',
+              },
+            }}
+
           >
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
+              sx={{
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                '&:hover': {
+                  color: 'primary',
+                },
+              }}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -171,7 +249,7 @@ const EnhancedTableToolbar = (props) => {
           variant="subtitle1"
           component="div"
         >
-          {numSelected} selected
+          {numSelected} Equipos seleccionados
         </Typography>
       ) : (
         <Typography
@@ -197,55 +275,66 @@ EnhancedTableToolbar.propTypes = {
 };
 
 export default function Equipos() {
+
   const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('nacionalidad');
+  const [orderBy, setOrderBy] = React.useState('nombre');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
 
+  const [openExcel, setOpenExcel] = React.useState(false);
   const [openDialogEquipos,setOpenDialogEquipos] = React.useState(false);
   const [managers , setManagers] = React.useState([])
   const [torneos , setTorneos] = React.useState([])
   const [equipos , setEquipos] = React.useState([])
   const [loading,setLoading] = React.useState(true);
 
+  const [equiposSelect, setEquiposSelect] = React.useState({
+    id: 0,
+    nombre: "",
+    nacionalidad:[],
+    manager:0,
+    torneo:0,
+  })
 
   const dispatch = useDispatch();
 
+  const [actionSelect, setActionSelect] = React.useState('');
+  
+  
+  
   const getEquipos = async () =>{
     const {clubes} = await equiposServices.getEquipos();
     setEquipos(clubes)
     console.log("Holas",clubes);
-}
-const getTorneos = async () =>{
+  }
 
-  setTorneos([{
-    id:1,
-    nombre:"Torneo 1",
-    tipo:"Liga",
-    nacionalidad:"Argentina",
-    total_equipos:10,
-    total_grupos:2,
-    temporada:"15",
-  }])
-}
-const getManagers = async () =>{
+  const getTorneos = async () =>{
 
-  setManagers([{
-    id:1,
-    email:"mortega@hotmail.com",
-    username:"mortega",
-    nombre:"Marcos",
-    apellido:"Ortega",
-    fecha_nacimiento:"01/01/1990",
-    nacionalidad:"Argentina"
-  }])
-}
+    setTorneos([{
+      id:1,
+      nombre:"Torneo 1",
+      tipo:"Liga",
+      nacionalidad:"Argentina",
+      total_equipos:10,
+      total_grupos:2,
+      temporada:"15",
+    }])
+  }
 
+  const getManagers = async () =>{
 
-
+    setManagers([{
+      id:1,
+      email:"mortega@hotmail.com",
+      username:"mortega",
+      nombre:"Marcos",
+      apellido:"Ortega",
+      fecha_nacimiento:"01/01/1990",
+      nacionalidad:"Argentina"
+    }])
+  }
 
   React.useEffect(() => {
     dispatch(getNations());
@@ -254,14 +343,49 @@ const getManagers = async () =>{
     getManagers();
     setLoading(false);
   }
-  ,[loading]);
-
-  console.log("Equipos =>",equipos);
-
-  const handleOpenDialogEquipos = () => {
+  ,[loading]); // eslint-disable-line react-hooks/exhaustive-deps
+  
+  const handleOpenDialog = () => {
     setOpenDialogEquipos(true);
   }
+  console.log("Equipos =>",equipos);
 
+  const handleEquipoSelect = (equipo,action) => {
+
+    setActionSelect(action)
+
+     console.log("Equipo Select =>",equipo);
+
+    if(action === 'edit'){
+
+
+      setEquiposSelect({
+        id: equipo.id,
+        nombre: equipo.nombre,
+        nacionalidad: equipo.Nacionalidad.id,
+        manager: equipo.Manager&&equipo.Manager.nombre,
+        torneo: equipo.Torneo&&equipo.Torneo.nombre
+      })
+    }
+    else if (action === 'ver'){
+      setEquiposSelect({
+        id: equipo.id,
+        nombre: equipo.nombre,
+        nacionalidad: equipo.Nacionalidad.nombre,
+        manager: equipo.Manager&&equipo.Manager.nombre,
+        torneo: equipo.Torneo&&equipo.Torneo.nombre
+      })
+    }
+    
+    console.log("Equipo Select ULTIMO =>",equiposSelect);
+
+    handleOpenDialog()
+  }
+ const handleCreateEquipos = () => {
+    setActionSelect('create')
+    setEquiposSelect({})
+    handleOpenDialog()
+ }
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -306,27 +430,79 @@ const getManagers = async () =>{
     setPage(0);
   };
 
+  const handleExcel = () => {
+    setOpenExcel(true);
+  }
+
+
+  const handleDelete = async (id) => {
+    console.log("ID DE equipo",id);
+    Swal.fire({
+      title: 'Advertencia',
+      text: '¿ Esta seguro que desea eliminar el equipo ?',
+      icon: 'warning',
+      iconColor: '#e8b71c',
+      showCancelButton: true,
+      confirmButtonText: 'Si, Eliminar',
+      confirmButtonColor: '#1e2024',
+      cancelButtonText: 'No, Cancelar',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+       const res = await equiposServices.deleteEquiposService(id);
+       console.log("QUE ONDA",res);
+
+        if(res.status === 200){
+          await getEquipos()
+        Swal.fire(
+          'Eliminado!',
+        `${res.message}`,
+          'success'
+        )
+        }
+        else{
+          Swal.fire(
+            'Error!',
+            'El equipo no ha sido eliminado. Ocurrio un error en el servidor',
+            'error'
+          )
+        }
+      }
+    })
+  }
+
+
+
+
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
-        <Box sx={{display:"flex", justifyContent:"space-between"}}> 
+    <Box sx={{ width: '100%',borderBottom:"none",  }}>
+      <Paper sx={{ width: '100%', mb: 2,  borderBottom:"none",   boxShadow: "1px 1px 4px 2px rgba(0,0,0,0.45)",}}>
+        <Box > 
+        <div style={{display:"flex", justifyContent:"space-between" , paddingTop:32}}>
         <EnhancedTableToolbar numSelected={selected.length} />
-        <Tooltip title="Agregar Equipo">
-        <Button onClick={handleOpenDialogEquipos} variant="contained" endIcon={<AddCircleIcon />}>
-          Crear Equipo
+        <Tooltip title="Agregar Equipos">
+        <Button onClick={handleExcel} variant="contained" startIcon={<CloudUploadIcon/>} endIcon={<StorageIcon />}>
+          Subir Excel de Equipos
         </Button>
         </Tooltip>
+        <Tooltip title="Agregar Equipos">
+        <Button onClick={handleCreateEquipos} variant="contained" endIcon={<AddCircleIcon />}>
+          Crear equipo
+        </Button>
+        </Tooltip>
+        </div>
         </Box>
-       
-        <TableContainer>
+
+        <Paper sx={{mt:4, borderTop:"solid 2px #546e7a",borderBottom:"none"}}> 
+
+        <TableContainer >
          
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
+            
+         
           >
             <EnhancedTableHead
               numSelected={selected.length}
@@ -367,30 +543,58 @@ const getManagers = async () =>{
                       <TableCell
                         id={labelId}
                       >
-                        {row.id && row.id }
+                        {row.id}
                       </TableCell>
-                      <TableCell>{row&&row.nombre&&row.nombre}</TableCell>
-                      <TableCell>{row && row.Nacionalidad&& row.Nacionalidad.nombre}</TableCell>
-                      <TableCell>{row &&row.managers&&row.managers.nombre}</TableCell>
-                      <TableCell>{row &&row.torneo&&row.torneo.nombre}</TableCell>
-      
+                      <TableCell align="left"  >{row&&row.nombre&&row.nombre}</TableCell>
+                      <TableCell align="left" >{row && row.Nacionalidad&& row.Nacionalidad.nombre}</TableCell>
+                      <TableCell align="left" >{row &&row.managers&&row.managers.nombre}</TableCell>
+                      <TableCell align="left" >{row &&row.torneo&&row.torneo.nombre}</TableCell>
+                      <TableCell align="left">
+
+                        <Tooltip title="Ver">
+
+                          <IconButton aria-label="ver" onClick={() => handleEquipoSelect(row,"ver")}>
+                            <VisibilityIcon />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Editar">
+                          <IconButton aria-label="edit" onClick={() => handleEquipoSelect(row, "edit")}>
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Eliminar">
+                          <IconButton aria-label="delete" onClick={() => handleDelete(row.id)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+
+
+                      </TableCell>
                     </TableRow>
                   );
                 })}
             </TableBody>
           </Table>
         </TableContainer>
+        
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
           count={equipos.length}
           rowsPerPage={rowsPerPage}
           page={page}
+          labelRowsPerPage="Filas por página"
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{borderBottom:"none"}}
         />
+        </Paper>
       </Paper>
-      <DialogComponentEquipos open={openDialogEquipos} setOpen={setOpenDialogEquipos} torneos={torneos} managers={managers} setLoading={setLoading} />
+      <DialogComponentEquipos open={openDialogEquipos} setOpen={setOpenDialogEquipos} torneos={torneos} managers={managers} equipo={equiposSelect} setEquipoSelect={setEquiposSelect} action={actionSelect} setLoading={setLoading} />
+      <DialogExcelEquipos openExcel={openExcel} setOpenExcel={setOpenExcel} />
+                
     </Box>
   );
 }

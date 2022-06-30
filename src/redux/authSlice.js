@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { setMessage } from "./message";
 import AuthService from "../services/api/auth/authService";
+import { Navigate } from "react-router-dom";
 // import userAdminService from "../services/api/entity/userAdminService";
 
 const user = JSON.parse(localStorage.getItem("user"));
@@ -111,10 +112,14 @@ const authSlice = createSlice({
       state.isLoggedIn = false;
       state.user = null;
     },
+
+
     // [getDataUser.fulfilled]: (state, action) => {
     //   console.log("PAYLOAD",action.payload)
     //   state.credenttials = action.payload.credenttials;
     // },
+
+
   },
 });
 const { reducer } = authSlice;

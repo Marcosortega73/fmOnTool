@@ -1,32 +1,31 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import CloseIcon from "@mui/icons-material/Close";
 import Slide from "@mui/material/Slide";
 import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
+
 import Paper from "@mui/material/Paper";
 import SaveIcon from "@mui/icons-material/Save";
 import { useSelector } from "react-redux";
+import Chip from '@mui/material/Chip';
 
 //CONSTRUCCION DEL FORM
 import { useForm } from "react-hook-form";
 import { FormText } from "../../../../components/forms/imputs/FormText";
 import { FormSelect } from "../../../../components/forms/imputs/FormSelect";
-import { Container, FormControl, Grid } from "@mui/material";
-import jugadoresServices from "../../../../services/api/jugadores/jugadoresService";
+import { Container, Grid, Typography, Avatar} from "@mui/material";
 import equiposServices from "../../../../services/api/equipos/equiposServices";
+
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,
   padding: theme.spacing(1),
+  margin: theme.spacing(1),
+  borderRadius: "5px",
   textAlign: "center",
   color: theme.palette.text.secondary,
+
 }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -34,23 +33,23 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 export default function DialogComponentEquipos(props) {
-  const { open, setOpen, setLoading,managers,torneos } = props;
+  const { open, setOpen, setLoading, equipo, setEquiposSelect, managers, torneos, action } = props;
   const { nations } = useSelector((state) => state.nacionalidad);
 
-
-
-
+  console.log("equipo Llegando al hijo ahora", equipo);
+  console.log("action", action);
 
 
   const handleClose = () => {
     setOpen(false);
   };
-  console.log("managers", managers);
-  console.log("torneos", torneos);
+
+
   const {
     handleSubmit,
     control,
     register,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -62,78 +61,126 @@ export default function DialogComponentEquipos(props) {
     },
   });
 
-  console.log("nations", nations);
+
+  React.useEffect(() => {
+    if (action === "edit") {
+      setValue("id", equipo.id);
+      setValue("nombre", equipo.nombre);
+      setValue("nacionalidad", equipo.nacionalidad);
+      setValue("manager", equipo.equipo);
+      setValue("torneo", equipo.altura);
+    }
+    else if (action === "create") {
+      setValue("id", 0);
+      setValue("nombre", "");
+      setValue("nacionalidad", []);
+      setValue("manager", 0);
+      setValue("torneo", 0);
+    }
+
+  }, [equipo, setValue, action]);
+    
 
   const onSubmit = (formValue) => {
     console.log(formValue);
-    equiposServices.createEquipos(formValue);
+    if(action==="create"){
+      equiposServices.createEquiposService(formValue);
+    }
+   else if(action==="edit"){
+    equiposServices.updateEquiposService(formValue);
+    }
      setOpen(false);  
      setLoading(true);     
   };
 
   return (
     <div>
+    
       <Dialog
-        fullScreen
         open={open}
         onClose={handleClose}
+        maxWidth="md"
         TransitionComponent={Transition}
       >
-        <AppBar sx={{ position: "relative" }}>
-          <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={handleClose}
-              aria-label="close"
-            >
-              <CloseIcon />
-            </IconButton>
-            <Button
-              autoFocus
-              color="inherit"
-              onClick={handleSubmit(onSubmit)}
-              endIcon={<SaveIcon />}
-            >
-              Guardar
-            </Button>
-          </Toolbar>
-        </AppBar>
-        <Container sx={{ mt: 5 }}>
-          <FormControl fullWidth>
+        <Container sx={{ mt:3 }}>
+            {action === "create" || action ==="edit"  ? 
+            (<>
+              <div style={{ display:"flex", flexDirection:"column",alignItems:"center", paddingBottom:"25px"}}>  
+               <div style={{marginBottom:"15px"}}> 
+               <Avatar></Avatar>
+               </div>
+               <div style={{
+                border:"solid 2px #1A2027",
+                borderRadius:"5px",
+                padding:"10px",
+
+              }}>
+                <Typography variant="h5"  align="center" sx={{
+             
+                
+                }}>
+                 {action === "create"?"Nuevo equipo": "Editar equipo"}
+                </Typography>
+               </div>
+               </div>
+               </>) 
+            
+             : action === "ver"&& <>
+             <div style={{ display:"flex", flexDirection:"column",alignItems:"center", paddingBottom:"25px"}}>  
+              <div style={{marginBottom:"15px"}}> 
+              <Avatar></Avatar>
+              </div>
+              <div>
+                <Typography variant="h5" gutterBottom align="center" sx={{mb:5}}>
+                  Ver {equipo&&equipo.nombre}
+                </Typography>
+              </div>
+              </div>
+              </>
+            }
+        { action === "create" || action === "edit" ? (
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Grid container spacing={3}>
-                <Grid item >
+              <Grid container spacing={3} sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                pl: "25px",
+                pb: "25px",
+                mt:2
+              }}>
+                <Grid  xl={4} lg={4} md={4} xs={6} >
                   <Item>
-                  <h4>ID Equipo</h4>
                     <FormText
                       control={control}
                       errors={errors}
                       register={register}
                       name="id"
                       rulesBol={true}
-                      labelText="ID Equipo"
+                      text="ID equipo"
+                      labelText="ID equipo"
                       type="number"
+
                     />
                   </Item>
                 </Grid>
-                <Grid item>
+                <Grid  xl={4} lg={4} md={4} xs={6}>
                   <Item>
-                  <h4>Nombre</h4>
                     <FormText
                       control={control}
                       errors={errors}
                       register={register}
                       name="nombre"
+                      labelText="Nombre"
                       rulesBol={true}
-                      labelText="Nombre"             
+                      text="Nombre"
                       type="text"
+                      vmodel={equipo&&equipo.nombre}
                     />
                   </Item>
                 </Grid>
-                <Grid item >
+                <Grid  xl={4} lg={4} md={4} xs={6} >
                   <Item>
-                  <h4>Nacionalidad</h4>
+                 
                     <FormSelect
                       control={control}
                       errors={errors}
@@ -141,47 +188,109 @@ export default function DialogComponentEquipos(props) {
                       name="nacionalidad"
                       rulesBol={true}
                       labelText="Nacionalidad"
+                      text="Nacionalidad"
                       opcion={nations.nations}
                     />
                   </Item>
                 </Grid>
 
-                <Grid item>
-                <Item>
-                    <h4>Managers</h4>
+              {/*   <Grid  xl={4} lg={4} md={4} xs={6}>
+                <Item>                
                     <FormSelect
                       control={control}
                       errors={errors}
                       register={register}
-                      name="manager_id"
+                      name="manager"
                       rulesBol={true}
-                      labelText="Manager"
-                      opcion={managers}
+                      labelText="manager"
+                      text="manager"
+                      opcion={equipos}
                     />
                   </Item>
-                </Grid>
-                <Grid item>
-                <Item>
-                    <h4>Torenos</h4>
-                    <FormSelect
+                </Grid> */}
+           {/*      <Grid  xl={4} lg={4} md={4} xs={6} >
+                  <Item>
+                    <FormText
                       control={control}
                       errors={errors}
                       register={register}
-                      name="torneo_id"
+                      name="altura"
                       rulesBol={true}
-                      labelText="Torneo"
-                      opcion={torneos}
-                      multiple={true}
+                      text="Altura - Cm"
+                      labelText="Altura - Cm"
+                      type="number"
                     />
                   </Item>
-                </Grid>
-    
-
+                </Grid> */}
+               
               </Grid>
+              <Grid xl={4} lg={4} md={4} xs={6} sx={{mt:2}}>
+                  <Item>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      endIcon={<SaveIcon />}
+                      sx={{
+                        width: "100%",
+                        height: "50px",
+                        borderRadius: "5px",
+                        backgroundColor: "#546e7a",
+                        color: "white",
+                        fontSize: "20px",
+                        fontWeight: "bold",
+                        marginTop: "10px",
+                        marginBottom: "10px",
+
+                      }}
+                    >
+                      Guardar
+                    </Button>
+                  </Item>             
+                </Grid>
             </form>
-          </FormControl>
+           ):( 
+            
+          action === "ver" && (
+              
+              <Grid container spacing={3} sx={{
+                display:"flex", 
+                justifyContent:"center",
+                pl: "25px",
+                pb: "25px",
+              }}>
+                
+                <Grid  xl={4} lg={4} md={4} xs={6}>
+                  <Item>
+                  <Typography variant="h6" gutterBottom sx={{display:"flex", flexDirection:"column", alignItems:"center"}}>
+                      Manager:
+                    <Chip sx={{mt:1}} color="primary" label={equipo.manager?equipo.manager:'Sin entrenador'} />
+                    </Typography>
+                    </Item>
+                </Grid> 
+                <Grid  xl={4} lg={4} md={4} xs={6}>
+                  <Item >
+                    <Typography variant="h6" gutterBottom sx={{display:"flex", flexDirection:"column", alignItems:"center"}} >
+                      Nacionalidad:
+                    <Chip sx={{mt:1}} color="primary"  label={equipo.nacionalidad} />
+                    </Typography>
+                    </Item>
+                </Grid>
+                <Grid  xl={4} lg={4} md={4} xs={6}>
+                  <Item>
+                    <Typography variant="h6" gutterBottom sx={{display:"flex", flexDirection:"column", alignItems:"center"}}>
+                      Torneo:
+                    <Chip sx={{mt:1}} color="primary" label={equipo.torneo?equipo.torneo:'Sin Torneo'} />
+                    </Typography>
+                    </Item>
+                    </Grid>
+              </Grid>
+            ) 
+            
+          )}
         </Container>
       </Dialog>
+      
     </div>
   );
 }

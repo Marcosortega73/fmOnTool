@@ -22,11 +22,11 @@ export default function DialogExcel({openExcel,setOpenExcel}) {
 
   const onSubmit = async (formValue) => {
 
-    console.log(formValue.file[0]);
+    console.log(formValue.equipo[0]);
 
     let formData = new FormData();
 
-    formData.append('file', formValue.file[0]);
+    formData.append('equipo', formValue.equipo[0]);
 
     console.log(formData);
 
@@ -42,7 +42,7 @@ export default function DialogExcel({openExcel,setOpenExcel}) {
       }).then((result) => {
         if (result.value) {
 
-            uploadsService.uploadBaseDatosService(formData)
+            uploadsService.uploadEquiposService(formData)
          .then(res => {
                 console.log("CONSOLA DE RES",res);
 
@@ -98,24 +98,20 @@ export default function DialogExcel({openExcel,setOpenExcel}) {
           <DialogContentText>
             <div>
             <p>
-            Subir Excel de jugadores para importar a la base de datos de la aplicación.
+            Subir Excel de equipos para importar a la base de datos de la aplicación.
             La tabla debe contener los siguientes campos:
             </p>
             <ul>
-                <li>Id</li>
+                <li>id</li>
                 <li>nombre</li>
                 <li>nacionalidad_id</li>
-                <li>equipo_id</li>
-                <li>altura</li>
-                <li>peso</li>
-                <li>ca</li>
-                <li>cp</li>
-                <li>valor</li>
+                <li>manager_id</li>
+                <li>torneo_id</li>
             </ul>
             </div>
           </DialogContentText>
         
-         <input {...register('file', { required: true })} type="file"  />
+         <input {...register('equipo', { required: true })} type="file"  />
        
         </DialogContent>
         <DialogActions>
