@@ -363,7 +363,7 @@ export default function Equipos() {
         id: equipo.id,
         nombre: equipo.nombre,
         nacionalidad: equipo.Nacionalidad.id,
-        manager: equipo.Manager&&equipo.Manager.nombre,
+        //manager: equipo.Manager&&equipo.Manager.nombre,
         torneo: equipo.Torneo&&equipo.Torneo.nombre
       })
     }
@@ -372,7 +372,7 @@ export default function Equipos() {
         id: equipo.id,
         nombre: equipo.nombre,
         nacionalidad: equipo.Nacionalidad.nombre,
-        manager: equipo.Manager&&equipo.Manager.nombre,
+       // manager: equipo.Manager&&equipo.Manager.nombre,
         torneo: equipo.Torneo&&equipo.Torneo.nombre
       })
     }
@@ -547,7 +547,7 @@ export default function Equipos() {
                       </TableCell>
                       <TableCell align="left"  >{row&&row.nombre&&row.nombre}</TableCell>
                       <TableCell align="left" >{row && row.Nacionalidad&& row.Nacionalidad.nombre}</TableCell>
-                      <TableCell align="left" >{row &&row.managers&&row.managers.nombre}</TableCell>
+                      
                       <TableCell align="left" >{row &&row.torneo&&row.torneo.nombre}</TableCell>
                       <TableCell align="left">
 
@@ -593,7 +593,7 @@ export default function Equipos() {
         </Paper>
       </Paper>
       <DialogComponentEquipos open={openDialogEquipos} setOpen={setOpenDialogEquipos} torneos={torneos} managers={managers} equipo={equiposSelect} setEquipoSelect={setEquiposSelect} action={actionSelect} setLoading={setLoading} />
-      <DialogExcelEquipos openExcel={openExcel} setOpenExcel={setOpenExcel} />
+      <DialogExcelEquipos updateEquipos={getEquipos} openExcel={openExcel} setOpenExcel={setOpenExcel} />
                 
     </Box>
   );

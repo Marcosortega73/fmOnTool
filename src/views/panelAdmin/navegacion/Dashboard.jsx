@@ -1,31 +1,12 @@
-import {useState, useEffect} from 'react';
 import { useSelector } from "react-redux";
-import {isLoggedIn} from '../../../redux/authSlice';
-import userAdminService from '../../../services/api/entity/userAdminService';
-
 
 const Dashboard = () => {
-  const [userData, setUserData] = useState({
-  });
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { isLoggedIn,user } = useSelector((state) => state.auth);
 
-  //NO PUDE HACERLO DESDE REDUX
-  const user  = JSON.parse(localStorage.getItem('user'));
-
-
-useEffect(() => {
-  if (user) {
-    userAdminService(user).then((response) => {
-      setUserData(response);
-    });
-
-    }
-}, [isLoggedIn]); // eslint-disable-line
-
-  console.log(userData)
+  console.log(user)
   return (
     <>
-    <div>{user? <>{userData.email}</>:"HOLA"}</div>
+    <div>{user? <>{user.userPermission?.email}</>:<><p>No se pudieron Obtener los datos</p></>}</div>
     </>
   )
 }

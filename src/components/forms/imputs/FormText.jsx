@@ -19,7 +19,8 @@ export const FormText = ({
   bgcolor,
   text,
   setValue,
-  vmodel
+  vmodel,
+  readOnly
 }) => {
   
   return (
@@ -28,6 +29,7 @@ export const FormText = ({
         name={name}
         control={control}
         rules={{ required: rulesBol }}
+        autoComplete='ViewCrunch'
         render={({ field }) => (
           <>
           <div style={{display:"flex",flexDirection:"column"}}>
@@ -40,9 +42,14 @@ export const FormText = ({
             type={type}
             className="formText"
             color="primary"
+            InputProps={
+              readOnly ? {
+              readOnly: true,
+            }:
+            {}}
             error={!!errors[name]}
             helperText={errors[name] && `${text} es un Campo Requerido`}
-            autoComplete="off"
+            autoComplete='ViewCrunch'
           />
           </div>
           </>

@@ -8,6 +8,9 @@
     "@mui/icons-material": "^5.8.3",
     "@mui/material": "^5.8.3",
     "@mui/styled-engine-sc": "^5.8.0",
+    "@mui/x-data-grid": "^5.12.3",
+    "@mui/x-data-grid-generator": "^5.12.3",
+    "@mui/x-data-grid-pro": "^5.12.3",
     "@mui/x-date-pickers": "^5.0.0-alpha.6",
     "@reduxjs/toolkit": "^1.8.2",
     "@testing-library/jest-dom": "^5.16.4",
@@ -48,5 +51,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "dotenv-webpack": "^7.1.1"
   }
 }

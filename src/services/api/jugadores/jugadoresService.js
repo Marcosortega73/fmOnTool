@@ -20,6 +20,24 @@ try{
   };
 }
 
+const getFilterJugadoresService = async (pagina,search,cantidadItems) => {
+    console.log("LLEGE AL GET FILTER JUGADORES REQ")
+try{
+    const response  =  http
+      .get(API_URL+"filtros"+`?pagina=${pagina}&search=${search}&cantidadItems=${cantidadItems}`)
+      .then((res) => {
+           
+            return res.data;
+      });
+      return response
+    }
+    catch (error) {
+      console.log("LLEGE AL ERROR GET",error)
+    };
+}
+
+
+
 const createJugadorService = async (jugador) => {
     console.log("LLEGE AL CREATE JUGADOR REQ")
 try{
@@ -92,7 +110,8 @@ const jugadoresServices = {
     createJugadorService,
     updateJugadorService,
     uploadBaseDatosService,
-    deleteJugadorService
+    deleteJugadorService,
+    getFilterJugadoresService
 
 
 }

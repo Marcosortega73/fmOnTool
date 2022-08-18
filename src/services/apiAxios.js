@@ -4,7 +4,7 @@ import authHeader from "./helpers/authHeader";
 const {headers} = authHeader();
 console.log(headers)
 const http = axios.create({
-    baseURL: 'http://localhost:3030/api/',
+    baseURL:"http://localhost:3030/api",
     headers
   });
 

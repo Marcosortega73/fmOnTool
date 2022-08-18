@@ -14,9 +14,10 @@ import { FormCheck } from "../../components/forms/imputs/FormCheck";
 import { FormText } from "../../components/forms/imputs/FormText";
 
 import AuthService from "../../services/api/auth/authService";
+import UserPendingService from "../../services/api/auth/userPending";
 import SnackBarComponent from "../../components/common/SnackBarComponent";
 import BackDropComponent from "../../components/common/BackDropComponent";
-
+import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import backgroundLogin from "../../assets/images/generales/login-bg.jpg";
 import logo from "../../assets/images/entherprise/logoSuperliga.png";
@@ -67,31 +68,42 @@ const Register = ({ data }) => {
     console.log(data);
     setBackDrop(true);
     //POST DE REGISTER
-    await AuthService.registerAdmin(data)
+    await UserPendingService.registerUserPendingService(data)
       .then((res) => {
         console.log(res, "ressadsa");
         setBackDrop(false);
+
         if (res.status === 200) {
-        setOpenSnackAlert({
-            open: true,
-            message: "Usuario registrado correctamente",
-            severity: "success",
-        })
-        navigate("/login");
+
+        Swal.fire({
+            title: "Usuario registrado correctamente",
+            text: "Quedara sujeto a aprovacion por parte de un administrador, cuando se confirme le enviaremos un correo",
+            icon: "success",
+            confirmButtonText: "Aceptar",
+        }).then((result) => {
+            if (result.value) {
+                navigate("/");
+
+            }
+        }
+        )
         }
         else{
-            setOpenSnackAlert({
-                open: true,
-                message: "Error al registrar usuario",
-                severity: "error",
-            })
+          console.log("RESSS",res)
+            Swal.fire({
+                title: "Error",
+                text: "El usuario no se pudo registrar",
+                icon: "error",
+                confirmButtonText: "Aceptar",
+            }
+            ) 
             navigate("/register");
-        }
-        
-        setLoading(false);
+         }
+            
+         setLoading(false);    
       })
       .catch((err ) => {
-    console.log("EERROR en el servidor", err);
+        console.log("EERROR en el servidor", err);
         setBackDrop(false);
         setOpenSnackAlert({
             message: "Error al registrar usuario",

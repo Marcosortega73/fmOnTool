@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { setMessage } from "./message";
 import AuthService from "../services/api/auth/authService";
+
 import { Navigate } from "react-router-dom";
 // import userAdminService from "../services/api/entity/userAdminService";
 
 const user = JSON.parse(localStorage.getItem("user"));
-// const credenttials = user? JSON.parse(localStorage.getItem("credenttials")):null;
+const permission = user? JSON.parse(localStorage.getItem("credentials")):null;
 
 //SIN USAR AUN
 export const register = createAsyncThunk(
@@ -36,10 +37,12 @@ export const login = createAsyncThunk(
   async (dataUser, thunkAPI) => {
     try {
       const data = await AuthService.login(dataUser);
-      console.log( data.token)
-      console.log("LLEGE AL LOGIN",data)
-
-      return { user: data};
+      const userPermission = await AuthService.getDataUserService(data);
+      console.log("LLEGE AL USER PERMISSION",userPermission)
+      //navigate to dashboard
+      
+      return { user: data,
+        userPermission:userPermission};
     } 
     catch (error) {
       const message =
@@ -64,9 +67,9 @@ export const logout = createAsyncThunk("/logout", async () => {
 //     if (user) {
 //       const data = await userAdminService()
 //       console.log("LLEGE AL LA DATA USERADMI222",data)
-//       return { credenttials: data};
+//       return { credentials: data};
 //     }
-//     return { credenttials: null};
+//     return { credentials: null};
 //   } 
 //   catch (error) {
 //     const message =
@@ -83,8 +86,8 @@ export const logout = createAsyncThunk("/logout", async () => {
 
 const initialState =
   user
-  ? { isLoggedIn: true, user }
-  : { isLoggedIn: false, user: null}
+  ? { isLoggedIn: true, user, permission}
+  : { isLoggedIn: false, user: null,permission}
   
 
 
@@ -103,6 +106,7 @@ const authSlice = createSlice({
     [login.fulfilled]: (state, action) => {
       state.isLoggedIn = true;
       state.user = action.payload;
+      state.permission = action.payload.userPermission;
     },
     [login.rejected]: (state, action) => {
       state.isLoggedIn = false;
@@ -116,7 +120,7 @@ const authSlice = createSlice({
 
     // [getDataUser.fulfilled]: (state, action) => {
     //   console.log("PAYLOAD",action.payload)
-    //   state.credenttials = action.payload.credenttials;
+    //   state.credentials = action.payload.credentials;
     // },
 
 

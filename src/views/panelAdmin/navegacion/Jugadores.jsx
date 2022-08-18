@@ -29,7 +29,7 @@ import {getNations}  from  '../../../redux/nacionalidadSlice';
 import {useDispatch} from 'react-redux';
 import jugadoresServices from '../../../services/api/jugadores/jugadoresService';
 import equiposServices from '../../../services/api/equipos/equiposServices';
-import { IconButton } from '@mui/material';
+import { IconButton, Pagination, Stack, TextField } from '@mui/material';
 
 import Swal from 'sweetalert2'
 import DialogExcel from './common/DialogExcelJugadores';
@@ -299,6 +299,8 @@ export default function Jugadores() {
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [count, setCount] = React.useState(0);
+  const [filter, setFilter] = React.useState('');
 
 
   const [openExcel, setOpenExcel] = React.useState(false);
@@ -332,10 +334,16 @@ export default function Jugadores() {
 }
 
   const getJugadores = async () =>{
-      const players = await jugadoresServices.getJugadoresService();
-      console.log(players);
-      setJugadores(players)
-      console.log(jugadores);
+      console.log("ROWperPage ",rowsPerPage);
+      console.log("PAGE ",page);
+      const players = await jugadoresServices.getFilterJugadoresService(page,filter,rowsPerPage);
+      console.log("DATA DEl FILTER",players);
+      let countRedondeado = parseInt(players.players.count/rowsPerPage);
+      setCount(countRedondeado);
+
+      console.log("count",count)
+      setJugadores(players.players.rows)
+      console.log("Jugadores Filtrados",jugadores);
       setLoading(false);
   } 
  
@@ -345,7 +353,7 @@ export default function Jugadores() {
     getEquipos()
     getJugadores()  
   }
-  ,[loading]); // eslint-disable-line react-hooks/exhaustive-deps
+  ,[loading,rowsPerPage,page,filter]); // eslint-disable-line react-hooks/exhaustive-deps
   
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -487,6 +495,7 @@ export default function Jugadores() {
           Subir Excel de Jugadores
         </Button>
         </Tooltip>
+        <TextField label="Buscar" variant="outlined" onChange={(e) => setFilter(e.target.value)} />
         <Tooltip title="Agregar Jugador">
         <Button onClick={handleCreateJugador} variant="contained" endIcon={<AddCircleIcon />}>
           Crear jugador
@@ -517,7 +526,6 @@ export default function Jugadores() {
               {/* if you don't need to support IE11, you can replace the `stableSort` call with:
                  rows.slice().sort(getComparator(order, orderBy)) */}
               {stableSort(jugadores, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.nombre);
                   const labelId = `enhanced-table-checkbox-${index}`;
@@ -583,19 +591,25 @@ export default function Jugadores() {
           </Table>
         </TableContainer>
         
-        <TablePagination
+       {/*  <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={jugadores.length}
+          count={count}
           rowsPerPage={rowsPerPage}
           page={page}
           labelRowsPerPage="Filas por página"
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           sx={{borderBottom:"none"}}
-        />
+        /> */}
         </Paper>
       </Paper>
+      <Stack spacing={2}>
+    
+      <Pagination count={count} defaultPage={page} onChange={handleChangePage} color="primary" />
+   
+   
+    </Stack>
       <DialogComponent open={openDialog} setOpen={setOpenDialog} jugador={jugadorSelect} setJugadorSelect={setJugadorSelect} action={actionSelect} equipos={equipos} setLoading={setLoading} />
       <DialogExcel openExcel={openExcel} setOpenExcel={setOpenExcel} />
                 

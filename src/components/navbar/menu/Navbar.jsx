@@ -1,49 +1,55 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
+import React, { useState } from "react";
 
-import Drawer from "@mui/material/Drawer";
-import CssBaseline from "@mui/material/CssBaseline";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
-import SwitchLeftIcon from "@mui/icons-material/SwitchLeft";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link } from "react-router-dom";
+import "./Navbar.css";
+import Dropdown from "./Dropdown";
+import logo from "../../../assets/images/entherprise/logo.png";
+import { Avatar, Button, ButtonBase, Grid, MenuItem, MenuList } from "@mui/material";
+import { Img } from "../../../styles-components/Layout";
 import ModeEditOutlineIcon from "@mui/icons-material/ModeEditOutline";
-
-import FiberNewIcon from "@mui/icons-material/FiberNew";
-
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
-
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+import CloseIcon from '@mui/icons-material/Close';
+import MenuIcon from '@mui/icons-material/Menu';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../redux/authSlice";
+import { logout } from "../../../redux/authSlice";
+import WebIcon from '@mui/icons-material/Web';
+import {
+  Search,
+  SearchIconWrapper,
+  StyledInputBase,
+} from "./styles-components/SearchBar";
+import SearchIcon from '@mui/icons-material/Search';
+import { useLocation } from "react-router-dom";
 
-import "./panelAdministracion.css";
+function Navbar() {
+  const [click, setClick] = useState(false);
+  const [dropdown, setDropdown] = useState(false);
+  const location = useLocation();
 
-const drawerWidth = 240;
-let activeStyle = 
-{
-  textDecoration: "underline",
+  const [locacionPath, setLocacionPath] = useState('');
 
-};
+  const handleClick = () => setClick(!click);
+  const closeMobileMenu = () => setClick(false);
 
-export default function PanelAdministracion({ data, dataSecond }) {
-  const { isLoggedIn, user} = useSelector((state) => state.auth);
-  const dispatch = useDispatch();
+  
+  const { isLoggedIn,permission } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  const onMouseEnter = () => {
+    if (window.innerWidth < 960) {
+      setDropdown(false);
+    } else {
+      setDropdown(true);
+    }
+  };
+
+  React.useEffect(() => {
+      setLocacionPath(location.pathname);
+    }, [location]);
 
   const handleLogout = (e) => {
     dispatch(logout())
@@ -56,27 +62,48 @@ export default function PanelAdministracion({ data, dataSecond }) {
       });
   };
 
+  const onMouseLeave = () => {
+    if (window.innerWidth < 960) {
+      setDropdown(false);
+    } else {
+      setDropdown(false);
+    }
+  };
+
+  console.log("LOCACION", location)
 
   return (
     <>
-      <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <AppBar
-          sx={{
-            width: `calc(100% - ${drawerWidth}px)`,
-            ml: `${drawerWidth}px`,
-            
-          }}
-        >
-          <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography variant="h6" noWrap component="div">
-              Panel de Administracion
-            </Typography>
-            <div>
-            <Grid container>
-              {!isLoggedIn ? (
+      <nav className="navbar">
+      <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
+              <ButtonBase sx={{ width: 128, height: 128 }}>
+                <Img alt="Competiciones-Online" src={logo} />
+              </ButtonBase>
+        </Link>
+      <Grid Grid container>
+        <Grid container sx={{pb:2}}>
+                <Grid item xs={9}>
+                  <Search>
+                    <SearchIconWrapper>
+                      <SearchIcon />
+                    </SearchIconWrapper>
+                    <StyledInputBase
+                      placeholder="Buscar…"
+                      inputProps={{ "aria-label": "search" }}
+                    />
+                  </Search>
+                </Grid>
+
+            <Grid item xs={3} sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              flexDirection: 'row',
+              paddingRight: '1rem',
+            }}>
+                  {
+              !isLoggedIn ? (
                 <>
-                  <Grid>
+                  <Grid item sx={{pr:2}}>
                     <Link to="/login" sx={{ textDecoration: "none" }}>
                       <Button
                         sx={{
@@ -85,9 +112,7 @@ export default function PanelAdministracion({ data, dataSecond }) {
                           borderRadius: "5px",
                           fontSize: "14px",
                           fontWeight: "bold",
-                          padding: "10px",
                           margin: "0",
-                          marginRight: "10px",
                           border: "2px solid #b0bec5",
 
                           "&:hover": {
@@ -112,9 +137,9 @@ export default function PanelAdministracion({ data, dataSecond }) {
                           borderRadius: "5px",
                           fontSize: "14px",
                           fontWeight: "bold",
-                          padding: "10px",
+                    
                           margin: "0",
-                          marginRight: "10px",
+                        
                           border: "2px solid #1e2024",
 
                           "&:hover": {
@@ -132,8 +157,8 @@ export default function PanelAdministracion({ data, dataSecond }) {
                   </Grid>
                 </>
               ) : (
-                <>
-                  <Grid item>
+                <>{permission === "ADMIN" && (
+                  <Grid >
                     <Link to="/panelAdministracion">
                       <Button
                         sx={{
@@ -155,10 +180,15 @@ export default function PanelAdministracion({ data, dataSecond }) {
                           },
                         }}
                       >
-                        <ModeEditOutlineIcon />
+                 <ModeEditOutlineIcon />
+                  
+    
+                       
                       </Button>
                     </Link>
                   </Grid>
+                  )}
+                  
                   <Grid item>
                     <Link to="/profile">
                       <Button
@@ -221,91 +251,91 @@ export default function PanelAdministracion({ data, dataSecond }) {
                   </Grid>
                 </>
               )}
-            </Grid>
-            </div>
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          sx={{
-            width: drawerWidth,
-            
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              backgroundColor: "#1A2027",
-              width: drawerWidth,
-              boxSizing: "border-box",
-            },
-          }}
-          variant="permanent"
-          anchor="left"
-        >
-          <Toolbar >
-          <div style={{ display:"flex", flexDirection:"column",alignItems:"center", justifyContent:"center", padding:"4px", margin:"4px"}}>  
-              <div style={{marginBottom:"15px"}}> 
-              <Avatar></Avatar>
-              </div>
-              <div>
-              <Typography variant="h6"   >
-                {user ? (user.userPermission&&user.userPermission.email) : "Usuario"}
-              </Typography>
-              </div>
-              </div>
-            </Toolbar>
-
-          <Divider />
-          <List>
-            {data.map((item, index) => (
-              <NavLink key={index} to={item.path}   style={({ isActive }) =>
-              isActive ? activeStyle : undefined
-            }>
-              <ListItem  disablePadding >
-                
-                  <ListItemButton className="buttonList" sx={{
-                    color:"#f5f5f5",
-                  }}>
-                    <ListItemIcon>
-                      <SwitchLeftIcon />
-                    </ListItemIcon>
-                    <ListItemText color="white" primary={item.name} />
-                  </ListItemButton>
-              
-              </ListItem>
-              </NavLink>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {dataSecond.map((item, index) => (
-              <NavLink key={index} to={item.path}   style={({ isActive }) =>
-              isActive ? activeStyle : undefined
-            }>
-              <ListItem key={index} disablePadding>
-            
-                  <ListItemButton sx={{
-                    color:"#f5f5f5",
-                  }}>
-                    <ListItemIcon>
-                      <FiberNewIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={item.name} />
-                  </ListItemButton>
-              
-              </ListItem>
-              </NavLink>
-            ))}
-          </List>
-        </Drawer>
-        <Box
-          component="main"
-          sx={{ flexGrow: 1, bgcolor: "background.default", p: 3 }}
-        >
-          <Toolbar />
-          <Box>
-          <Outlet />
-        </Box>
-        </Box>
-       
-      </Box>
+                </Grid>
+              </Grid>
+ 
+        <Grid container 
+        sx={{
+         
+         mt:0,
+          
+          }}>
+        <div className="menu-icon" onClick={handleClick}>
+         { click? <CloseIcon /> :<MenuIcon />}
+        </div>
+        <MenuList className={click ? "nav-menu active" : "nav-menu"}>
+          <MenuItem className="nav-item">
+            <Link to="/" className="nav-links" onClick={closeMobileMenu}>
+              Home
+            </Link>
+          </MenuItem>
+          <MenuItem
+            className="nav-item"
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+          >
+            <Link
+              to="/torneos"
+              className="nav-links"
+              onClick={closeMobileMenu}
+            >
+              Torneos y Competencias {dropdown?<ArrowDropUpIcon/>:<ArrowDropDownIcon/>}
+            </Link>
+            {dropdown && <Dropdown />}
+          </MenuItem>
+          <MenuItem className="nav-item">
+            <Link
+              to="/el-comunitario"
+              className="nav-links"
+              onClick={closeMobileMenu}
+            >
+              El Comunitario
+            </Link>
+          </MenuItem>
+          <MenuItem className="nav-item">
+            <Link
+              to="/apuestas"
+              className="nav-links"
+              onClick={closeMobileMenu}
+            >
+              Apuestas
+            </Link>
+          </MenuItem>
+          <MenuItem className="nav-item">
+            <Link
+              to="/conviertete-en-manager"
+              className="nav-links"
+              onClick={closeMobileMenu}
+            >
+               Conviertete en Manager
+            </Link>
+          </MenuItem>
+         <MenuItem className="nav-item">
+            <Link
+              to="/ligas-del-mundo"
+              className="nav-links"
+              onClick={closeMobileMenu}
+            >
+               Ligas del Mundo
+            </Link>
+          </MenuItem>      
+        </MenuList>
+        </Grid>
+        </Grid>
+      </nav>
     </>
   );
 }
+
+export default Navbar;
+
+
+{/* <MenuItem>
+<Link
+  to="/sign-up"
+  className="nav-links-mobile"
+  onClick={closeMobileMenu}
+>
+  Sign Up
+</Link>
+</MenuItem> */}

@@ -3,42 +3,38 @@ import {
     Container,
     FormControl,
     Grid,
-    Typography,
   } from "@mui/material";
   import { Box } from "@mui/system";
   import { useState,useEffect   } from "react";
   import { useForm } from "react-hook-form";
   import Button from "@mui/material/Button";
-  import { useDispatch, useSelector } from "react-redux";
+  import { useDispatch } from "react-redux";
   import { useNavigate } from "react-router-dom";
+  
   import { login } from "../../redux/authSlice";
   import { clearMessage } from "../../redux/message";
   import { FormText } from "../../components/forms/imputs/FormText";
-  import SnackBarComponent from "../../components/common/SnackBarComponent";
-  import BackDropComponent from "../../components/common/BackDropComponent";
   import backgroundLogin from "../../assets/images/generales/login-bg.jpg";
   import logo from "../../assets/images/entherprise/logoSuperliga.png";
   import Chip from '@mui/material/Chip';
+
+  
 
 
 
   import "./auth.css";
 import { Img } from "../../styles-components/Layout";
-
+import Swal from "sweetalert2";
+import {useSelector} from "react-redux";
 
 
   const Login = (props) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
+    const { isLoggedIn, user } = useSelector((state) => state.auth);
 
-    const [openSnackAlert, setOpenSnackAlert] = useState({
-      open: false,
-      message: "",
-      severity: "",
-    });
-  
-    const [backDrop, setBackDrop] = useState(false);
+
   
   
     const {
@@ -57,17 +53,28 @@ import { Img } from "../../styles-components/Layout";
         dispatch(clearMessage());
       }, [dispatch]);
 
-      const onSubmit = (formValue) => {
+      const onSubmit = async (formValue) => {
        
         setLoading(true);
-        dispatch(login(formValue))
-          .unwrap()
-          .then(() => {
-            navigate("/panelAdministracion/dashboard");
+         dispatch(login(formValue))
+        .unwrap()
+          .then(() => {   
+            navigate("/inicio");
           })
           .catch(() => {
             setLoading(false);
-          });
+            Swal.fire({
+              title: "Error",
+              text: "Usuario o contraseña incorrectos",
+              icon: "error",
+              confirmButtonText: "Ok"
+            });
+            navigate("/login");
+
+
+
+          }); 
+      
       };
     
     return (
@@ -193,10 +200,6 @@ import { Img } from "../../styles-components/Layout";
               <Img src={logo} alt="logo" />
               </div>
           </Box>
-          <BackDropComponent open={backDrop} />
-          {openSnackAlert.open && 
-          <SnackBarComponent options={openSnackAlert}/>
-          }
         </Container>
       </>
     );

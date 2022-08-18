@@ -8,7 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
 import uploadsService from '../../../../services/api/uploads/uploadsService';
-export default function DialogExcel({openExcel,setOpenExcel}) {
+export default function DialogExcel({openExcel,setOpenExcel,updateEquipos}) {
     const {
         handleSubmit,
         register,
@@ -53,6 +53,7 @@ export default function DialogExcel({openExcel,setOpenExcel}) {
                         'success'
                     )
                     setOpenExcel(false);
+                    updateEquipos();
                 }
                 else {
                     Swal.fire(
